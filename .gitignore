@@ -19,3 +19,5 @@ __pycache__/
 *.pyc
 
 .ruff_cache/
+
+node_modules/
