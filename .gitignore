@@ -17,3 +17,5 @@ instance/*
 # Ignore __pycache__ directories and .pyc files
 __pycache__/
 *.pyc
+
+.ruff_cache/
