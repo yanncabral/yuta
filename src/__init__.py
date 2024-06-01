@@ -4,7 +4,7 @@ from typing import Any, Dict, Optional
 from flask import Flask
 
 
-def create_app(test_config: Optional[Dict[str, Any]] = None) -> Flask:
+def run(test_config: Optional[Dict[str, Any]] = None):
     app = Flask(__name__, instance_relative_config=True)
 
     app.config.from_mapping(
@@ -30,4 +30,4 @@ def create_app(test_config: Optional[Dict[str, Any]] = None) -> Flask:
     def hello() -> str:
         return 'Hello, World!'
 
-    return app
+    app.run(host='0.0.0.0', port=3000, debug=True)
