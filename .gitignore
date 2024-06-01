@@ -13,3 +13,7 @@ instance/*
 !instance/.gitignore
 .webassets-cache
 .env
+
+# Ignore __pycache__ directories and .pyc files
+__pycache__/
+*.pyc
