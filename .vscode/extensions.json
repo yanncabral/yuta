@@ -1,5 +1,10 @@
 {
     "recommendations": [
-        "bungcip.better-toml"
+        "bungcip.better-toml",
+        "ms-python.black-formatter",
+        "dbaeumer.vscode-eslint",
+        "github.vscode-github-actions",
+        "ms-python.python",
+        "redhat.vscode-yaml"
     ]
 }
