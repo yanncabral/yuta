@@ -1,10 +1,12 @@
 from pathlib import Path
+from typing import Any, Dict, Optional
+
 from flask import Flask
-from typing import Optional, Dict, Any
+
 
 def create_app(test_config: Optional[Dict[str, Any]] = None) -> Flask:
     app = Flask(__name__, instance_relative_config=True)
-    
+
     app.config.from_mapping(
         SECRET_KEY='dev',
         DATABASE=str(Path(app.instance_path) / 'yuta.sqlite'),
