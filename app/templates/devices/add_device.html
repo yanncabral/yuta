@@ -1,0 +1,49 @@
+{% extends "base.html" %}
+{% from "_components/input_field.html" import input_field %}
+{% from "_components/combobox.html" import combobox %}
+{% from "_components/button.html" import button %}
+
+{% block content %}
+<main class="flex-1 p-4 md:p-6 max-w-4xl">
+    <div class="bg-zinc-950 text-zinc-50 shadow-sm w-full mx-auto">
+        <div class="flex flex-col space-y-1.5 p-6">
+            <h3 class="text-2xl font-bold tracking-tight">
+                Adicionar dispositivo
+            </h3>
+            <p class="text-md text-zinc-400">Configure seu novo dispositivo IoT para sua casa inteligente.</p>
+        </div>
+        <div class="p-6 space-y-4 border-t border-zinc-800">
+            <div class="space-y-2">
+                <label
+                    class="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+                    for="name">
+                    Nome do dispositivo
+                </label>
+                {{ input_field(id="name", placeholder="Digite o nome do dispositivo") }}
+            </div>
+            <div class="space-y-2">
+                <label
+                    class="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+                    for="type">
+                    Tipo de dispositivo
+                </label>
+                {{ combobox('type', options=['Lampada', 'Ventilador', 'Sensor de movimento']) }}
+            </div>
+            <div class="space-y-2">
+                <label
+                    class="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
+                    Pinos
+                </label>
+                <div class="grid grid-cols-3 gap-2">
+                    {{ combobox('pin1', 'Pin 1', options=['1', '2', '3', '4', '5']) }}
+                    {{ combobox('pin2', 'Pin 2', options=['1', '2', '3', '4', '5']) }}
+                    {{ combobox('pin3', 'Pin 3', options=['1', '2', '3', '4', '5']) }}
+                </div>
+            </div>
+        </div>
+        <div class="flex items-center p-6">
+            {{ button(id="add_device", label="Adicionar dispositivo") }}
+        </div>
+    </div>
+</main>
+{% endblock %}
