@@ -121,9 +121,9 @@ def devices_list():
 
 ## Ferramentas de Desenvolvimento e Formatação de Código
 
-### Black
+### Ruff
 
-O Black é um formatador de código automático para Python que garante que o código esteja em conformidade com um estilo consistente. Para formatar o código do projeto, execute o seguinte comando:
+O Ruff é um linter de código para Python que garante que o código esteja em conformidade com um estilo consistente. Para formatar o código do projeto, execute o seguinte comando:
 
 ```bash
 $ poetry run ruff check . --fix
