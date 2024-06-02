@@ -118,3 +118,13 @@ def devices_list():
         content_type="application/json",
     )
 ```
+
+## Ferramentas de Desenvolvimento e Formatação de Código
+
+### Black
+
+O Black é um formatador de código automático para Python que garante que o código esteja em conformidade com um estilo consistente. Para formatar o código do projeto, execute o seguinte comando:
+
+```bash
+$ poetry run ruff check . --fix
+```
