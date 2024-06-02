@@ -1,0 +1,23 @@
+{% from "_components/sidebar.html" import sidebar %}
+
+<!DOCTYPE html>
+<html lang="pt-br">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Yuta</title>
+    <link rel="stylesheet" href="{{url_for('static', filename='dist/bundle.css')}}">
+</head>
+
+<body>
+    <div class="grid min-h-screen w-full overflow-hidden lg:grid-cols-[280px_1fr] bg-zinc-950 antialiased">
+        {{ sidebar() }}
+
+        {% block content %}
+
+        {% endblock %}
+    </div>
+</body>
+
+</html>
