@@ -1,0 +1,41 @@
+{% macro combobox(id, label, options) %}
+<div class="space-y-2">
+    <label
+        class="text-sm font-medium leading-none text-zinc-300 peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+        for="{{ id }}">
+        {{ label }}
+    </label>
+    <div class="relative">
+        <button type="button" role="combobox" dir="ltr" data-state="closed"
+            class="flex h-10 items-center justify-between rounded-md border border-zinc-600 bg-zinc-950 px-3 py-2 text-sm text-zinc-300 placeholder:text-zinc-500 focus:outline-none focus:ring-2 focus:ring-zinc-500 focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 w-full"
+            onclick="toggleCombobox('{{ id }}')">
+            <span id="{{ id }}_label" style="pointer-events: none;" class="text-zinc-300">{{ options[0] }}</span>
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+                stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                class="lucide lucide-chevron-down h-4 w-4 text-zinc-50" aria-hidden="true">
+                <path d="m6 9 6 6 6-6"></path>
+            </svg>
+        </button>
+        <ul id="{{ id }}_options"
+            class="absolute hidden z-10 mt-2 max-h-60 w-full overflow-auto rounded-md bg-zinc-950 border border-zinc-800 outline-none">
+            {% for option in options %}
+            <li class="text-sm text-zinc-300 hover:bg-zinc-700 cursor-pointer px-4 py-2"
+                onclick="selectOption('{{ id }}', '{{ option }}')">{{ option }}</li>
+            {% endfor %}
+        </ul>
+    </div>
+</div>
+<script>
+    function toggleCombobox(id) {
+        var combobox = document.getElementById(id + '_options');
+        var state = combobox.style.display;
+        combobox.style.display = state === 'block' ? 'none' : 'block';
+    }
+
+    function selectOption(id, value) {
+        var label = document.getElementById(id + '_label');
+        label.textContent = value;
+        toggleCombobox(id);
+    }
+</script>
+{% endmacro %}
