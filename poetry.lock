@@ -172,6 +172,27 @@ async = ["asgiref (>=3.2)"]
 dotenv = ["python-dotenv"]
 
 [[package]]
+name = "flask-openapi3"
+version = "3.1.1"
+description = "Generate REST API and OpenAPI documentation for your Flask project."
+optional = false
+python-versions = ">=3.8"
+files = [
+    {file = "flask_openapi3-3.1.1-py3-none-any.whl", hash = "sha256:41b44e99737814070fbfe4d88402b0da412e44dfaefd581f92d9c63206da77fc"},
+    {file = "flask_openapi3-3.1.1.tar.gz", hash = "sha256:6d6acdaa20b86ca1cfd92414a1a69998777f042bfab97b9c274ca4189868391a"},
+]
+
+[package.dependencies]
+flask = ">=2.0"
+pydantic = ">=2.4"
+
+[package.extras]
+async = ["asgiref (>=3.2)"]
+dotenv = ["python-dotenv"]
+email = ["email-validator"]
+yaml = ["pyyaml"]
+
+[[package]]
 name = "identify"
 version = "2.5.36"
 description = "File identification library for Python"
@@ -749,4 +770,4 @@ watchdog = ["watchdog (>=2.3)"]
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.12"
-content-hash = "969e325ba6a9b2fbfc8bd9635458d4177105532b3aa2eb0d946e4d50ce731d71"
+content-hash = "b74ae11e54de1028fc9fbbf0a235087da3dee70eef197f62830de4788d390ff6"

@@ -1,13 +1,14 @@
 from pathlib import Path
 from typing import Any, Dict, Optional
 
-from flask import Flask
+from flask_openapi3 import Info, OpenAPI
 
 from app.register_blueprints import register_blueprints
 
 
 def run(test_config: Optional[Dict[str, Any]] = None):
-    app = Flask(__name__, instance_relative_config=True)
+    app_info = Info(title="Yuta API", version="1.0.0", description="Especificaçes da API do Yuta")
+    app = OpenAPI(__name__, info=app_info)
 
     app.config.from_mapping(
         SECRET_KEY="dev",
