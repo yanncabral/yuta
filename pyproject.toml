@@ -5,7 +5,7 @@ description = ""
 authors = ["Yann <iamyanndias@gmail.com>"]
 readme = "README.md"
 packages = [
-    { include = "src" }
+    { include = "app" }
 ]
 
 [tool.poetry.dependencies]
@@ -54,4 +54,4 @@ requires = ["poetry-core"]
 build-backend = "poetry.core.masonry.api"
 
 [tool.poetry.scripts]
-dev = "src:run"
+dev = "app:run"
