@@ -1,0 +1,6 @@
+{% macro avatar(name) %}
+{% set initials = name.split() %}
+<div class="bg-zinc-900 text-zinc-900 flex items-center justify-center rounded-full w-10 h-10">
+    <span>{{ initials[0][0:1] | upper }}{{ initials[-1][0:1] | upper }}</span>
+</div>
+{% endmacro %}
