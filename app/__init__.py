@@ -2,7 +2,7 @@ from pathlib import Path
 
 from flask_openapi3 import Info, OpenAPI
 
-from app.register_blueprints import register_blueprints
+from app.register_endpoints import register_endpoints
 
 
 def run():
@@ -17,6 +17,6 @@ def run():
     except OSError:
         pass
 
-    register_blueprints(app)
+    register_endpoints(app)
 
     app.run(host="0.0.0.0", port=3000, debug=True)

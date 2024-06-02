@@ -1,0 +1,7 @@
+###
+# Example request to add a device
+GET http://localhost:3000/devices/add
+
+###
+# Example request to list all devices
+GET http://localhost:3000/devices/
