@@ -7,5 +7,5 @@ from pydantic_mongo import PydanticObjectId
 class Device(BaseModel):
     id: Optional[PydanticObjectId] = None
     name: str
-    type: Literal["lamp", "fan", "door", "motion-sensor"]
+    type: Literal["fan", "door", "motion-sensor", "led", "rgb", "motion-sensor"]
     pin: int

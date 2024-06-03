@@ -6,4 +6,4 @@ from app.views.devices_view import devices_view
 
 def register_endpoints(app: Flask):
     app.register_api(devices_controller)
-    app.register_api(devices_view)
+    app.register_api_view(devices_view)
