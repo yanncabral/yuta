@@ -1,0 +1,24 @@
+{% extends "base.html" %}
+{% from "_components/table.html" import table %}
+{% from "_components/button.html" import button %}
+
+{% block content %}
+<main class="flex-1 p-4 md:p-6 max-w-4xl">
+    <div class="bg-zinc-950 text-zinc-50 shadow-sm w-full mx-auto">
+        <div class="flex flex-col space-y-1.5 p-6">
+            <h3 class="text-2xl font-bold tracking-tight">
+                Lista de Dispositivos
+            </h3>
+            <p class="text-md text-zinc-400">Veja todos os dispositivos IoT cadastrados em sua casa inteligente.</p>
+        </div>
+        <div class="p-6 space-y-4 border-t border-zinc-800">
+            {{ table(id="devices_table", columns=['ID', 'Tipo', 'Nome', 'Pinos'], data=devices_data, paginated=True) }}
+        </div>
+        <div class="p-6">
+            <a href="/devices/add">
+                {{ button(id="add_device", label="Adicionar") }}
+            </a>
+        </div>
+    </div>
+</main>
+{% endblock %}
