@@ -12,9 +12,9 @@
             <p class="text-md text-zinc-400">Veja todos os dispositivos IoT cadastrados em sua casa inteligente.</p>
         </div>
         <div class="p-6 space-y-4 border-t border-zinc-800">
-            {{ table(id="devices_table", columns=['ID', 'Tipo', 'Nome', 'Pinos'], data=devices_data, paginated=True) }}
+            {{ table(id="devices_table", columns=['ID', 'Tipo', 'Nome', 'Pinos'], data=devices_data, paginated=False) }}
         </div>
-        <div class="p-6">
+        <div class="px-6 w-full flex flex-row justify-end">
             <a href="/devices/add">
                 {{ button(id="add_device", label="Adicionar") }}
             </a>
