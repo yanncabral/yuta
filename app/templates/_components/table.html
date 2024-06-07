@@ -1,0 +1,43 @@
+{% macro table(id, columns, data, paginated=False) %}
+<div class="overflow-x-auto border-zinc-800 border rounded-md">
+    <table class="min-w-full divide-y divide-zinc-800" id="{{ id }}">
+        <thead class="bg-zinc-950 border-b border-zinc-800">
+            <tr>
+                {% for column in columns %}
+                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-zinc-400 uppercase tracking-wider">
+                    {{ column }}
+                </th>
+                {% endfor %}
+            </tr>
+        </thead>
+        <tbody class="bg-zinc-950 divide-y divide-zinc-800">
+            {% for row in data %}
+            <tr>
+                {% for cell in row %}
+                <td class="px-6 py-4 whitespace-nowrap text-sm text-zinc-400">
+                    {{ cell }}
+                </td>
+                {% endfor %}
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% if paginated %}
+<div class="mt-2">
+    {# Implementação simplificada de paginação, deve ser ajustada conforme necessidade #}
+    <nav class="relative z-0 inline-flex rounded-md shadow-sm -space-x-px" aria-label="Pagination">
+        <a href="#" class="relative inline-flex items-center px-2 py-2 rounded-l-md border border-zinc-800 bg-zinc-950 text-sm font-medium text-zinc-400 hover:bg-zinc-900">
+            Anterior
+        </a>
+        <!-- Números de página poderiam ser gerados aqui -->
+        <a href="#" class="relative inline-flex items-center px-4 py-2 border border-zinc-800 bg-zinc-950 text-sm font-medium text-zinc-400 hover:bg-zinc-900">
+            1
+        </a>
+        <a href="#" class="relative inline-flex items-center px-2 py-2 rounded-r-md border border-zinc-800 bg-zinc-950 text-sm font-medium text-zinc-400 hover:bg-zinc-900">
+            Próximo
+        </a>
+    </nav>
+</div>
+{% endif %}
+{% endmacro %}
