@@ -27,7 +27,7 @@
                     for="type">
                     Tipo de dispositivo
                 </label>
-                {{ combobox('type', options=['Lampada', 'Ventilador', 'Sensor de movimento']) }}
+                {{ combobox('type', options=['fan', 'door', 'motion-sensor', 'led', 'rgb']) }}
             </div>
             <div class="space-y-2">
                 <label
@@ -39,6 +39,8 @@
                     {{ combobox('pin2', 'Pin 2', options=['1', '2', '3', '4', '5']) }}
                     {{ combobox('pin3', 'Pin 3', options=['1', '2', '3', '4', '5']) }}
                 </div>
+                <p class="text-sm text-red-500" id="pin-error" style="display: none;">Os pinos selecionados devem ser
+                    diferentes entre si.</p>
             </div>
         </div>
         <div class="flex items-center p-6">
@@ -46,4 +48,36 @@
         </div>
     </div>
 </main>
+
+<script>
+    document.getElementById('add_device').addEventListener('click', function (event) {
+        const pin1 = document.getElementById('pin1').value;
+        const pin2 = document.getElementById('pin2').value;
+        const pin3 = document.getElementById('pin3').value;
+        const type = document.getElementById('type').value;
+
+        const pinCount = {
+            'fan': 1,
+            'door': 2,
+            'motion-sensor': 1,
+            'led': 1,
+            'rgb': 3
+        };
+
+        const selectedPins = [pin1, pin2, pin3].filter(pin => pin !== '');
+        const uniquePins = new Set(selectedPins);
+
+        if (selectedPins.length !== uniquePins.size) {
+            document.getElementById('pin-error').style.display = 'block';
+            event.preventDefault();
+        } else {
+            document.getElementById('pin-error').style.display = 'none';
+        }
+
+        if (selectedPins.length !== pinCount[type]) {
+            alert(`O tipo de dispositivo ${type} requer ${pinCount[type]} pino(s).`);
+            event.preventDefault();
+        }
+    });
+</script>
 {% endblock %}
