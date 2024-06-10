@@ -42,7 +42,7 @@
                     Pinos
                 </label>
                 <div id="pins-container">
-                    {{ pins_selector(pins=pins_list) }}
+                    {{ pins_selector(pins=pins_list, initial_pins=device.pins) }}
                 </div>
 
                 {% if form.pins.errors %}
