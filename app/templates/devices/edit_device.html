@@ -1,0 +1,64 @@
+{% extends "base.html" %}
+{% from "_components/input_field.html" import input_field %}
+{% from "_components/combobox.html" import combobox %}
+{% from "_components/button.html" import button %}
+{% from "_components/pins_selector.html" import pins_selector %}
+
+{% block content %}
+<form class="flex-1 p-4 md:p-6 max-w-4xl" method="post">
+    {{ form.csrf_token }}
+    <div class="bg-zinc-950 text-zinc-50 shadow-sm w-full mx-auto">
+        <div class="flex flex-col space-y-1.5 p-6">
+            <h3 class="text-2xl font-bold tracking-tight">
+                {% block title %}Editar dispositivo{% endblock %}
+            </h3>
+            <p class="text-md text-zinc-400">Edite as configurações do seu dispositivo IoT.</p>
+        </div>
+        <div class="p-6 space-y-4 border-t border-zinc-800">
+            <div class="space-y-2">
+                <label
+                    class="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+                    for="name">
+                    {{ form.name.label }}
+                </label>
+                {{ input_field(id=form.name.id, name=form.name.name, value=device.name, placeholder="Digite o nome do
+                dispositivo") }}
+            </div>
+            {% if form.name.errors %}
+            <ul class="text-red-500 text-xs">
+                {% for error in form.name.errors %}
+                <li>{{ error }}</li>
+                {% endfor %}
+            </ul>
+            {% endif %}
+
+            {{ combobox(id=form.device_type.id, name=form.device_type.name, label=form.device_type.label,
+            options=form.device_type.choices) }}
+
+            <div class="space-y-2">
+                <label
+                    class="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+                    for="name">
+                    Pinos
+                </label>
+                <div id="pins-container">
+                    {{ pins_selector(pins=pins_list) }}
+                </div>
+
+                {% if form.pins.errors %}
+                <ul class="text-red-500 text-xs">
+                    {% for error in form.pins.errors %}
+                    <li>{{ error }}</li>
+                    {% endfor %}
+                </ul>
+                {% endif %}
+            </div>
+
+        </div>
+
+        <div class="flex items-center p-6">
+            {{ button(id="edit_device", label="Salvar alterações", type="submit") }}
+        </div>
+    </div>
+</form>
+{% endblock %}

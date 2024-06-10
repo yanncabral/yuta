@@ -39,9 +39,12 @@ class Pin(BaseModel):
     is_free: bool
 
 
-def _build_pins_list(devices: list[Device]) -> list[Pin]:
+def _build_pins_list(devices: list[Device], current_device: Optional[Device] = None) -> list[Pin]:
     pins_list = []
     for device in devices:
+        if current_device and device.id == current_device.id:
+            continue
+
         for pin in device.pins:
             pins_list.append(Pin(id=pin, device_name=device.name if device.name else None, is_free=False))
 
@@ -104,16 +107,35 @@ def list_devices():
 @devices_bp.route("/devices/edit/<device_id>", methods=["GET", "POST"])
 def edit_device(device_id: str):
     repository = DevicesRepository(database=database)
+    device = repository.find_one_by_id(ObjectId(device_id))
+
+    if not device:
+        return redirect(url_for("devices_bp.list_devices"))
 
     devices = list(repository.find_by({}))
+    pins_list = _build_pins_list(devices, device)
 
-    def dto(device: Device):
-        return [device.id, DeviceType.label(device.type), device.name, ", ".join([str(pin) for pin in device.pins])]
+    form = AddDeviceForm()
 
-    return render_template(
-        "devices/list_devices.html",
-        devices_data=[dto(device) for device in devices],
-    )
+    form.pins.choices = [(str(pin.id), str(pin.id)) for pin in pins_list]
+
+    if request.method == "POST" and form.validate_on_submit():
+        pins_count = DeviceType.pin_count(form.device_type.data)
+        if len(form.pins.data) != pins_count:
+            form.pins.errors.append(
+                f"O dispositivo do tipo {DeviceType.label(form.device_type.data)} requer exatamente {pins_count} pino(s)."
+            )
+            return render_template("devices/edit_device.html", device=device, form=form, pins_list=pins_list)
+
+        device.name = form.name.data
+        device.type = form.device_type.data
+        device.pins = form.pins.data
+
+        repository.save(device)
+
+        return redirect(url_for("devices_bp.list_devices"))
+
+    return render_template("devices/edit_device.html", device=device, form=form, pins_list=pins_list)
 
 
 @devices_bp.route("/devices/delete/<device_id>", methods=["GET", "POST"])
