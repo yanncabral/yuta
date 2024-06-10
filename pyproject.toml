@@ -15,6 +15,7 @@ pymongo = "^4.7.2"
 pydantic-mongo = "^2.3.0"
 pydantic = "^2.7.2"
 flask-openapi3 = "^3.1.1"
+flask-wtf = "^1.2.1"
 
 
 [tool.poetry.group.dev.dependencies]

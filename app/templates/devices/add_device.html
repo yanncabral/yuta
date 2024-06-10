@@ -2,13 +2,16 @@
 {% from "_components/input_field.html" import input_field %}
 {% from "_components/combobox.html" import combobox %}
 {% from "_components/button.html" import button %}
+{% from "_components/pins_selector.html" import pins_selector %}
+{% from "_components/render_field.html" import render_field %}
 
 {% block content %}
-<main class="flex-1 p-4 md:p-6 max-w-4xl">
+<form class="flex-1 p-4 md:p-6 max-w-4xl" method="post">
+    {{ form.csrf_token }}
     <div class="bg-zinc-950 text-zinc-50 shadow-sm w-full mx-auto">
         <div class="flex flex-col space-y-1.5 p-6">
             <h3 class="text-2xl font-bold tracking-tight">
-                Adicionar dispositivo
+                {% block title %}Adicionar dispositivo{% endblock %}
             </h3>
             <p class="text-md text-zinc-400">Configure seu novo dispositivo IoT para sua casa inteligente.</p>
         </div>
@@ -17,67 +20,40 @@
                 <label
                     class="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
                     for="name">
-                    Nome do dispositivo
+                    {{ form.name.label }}
                 </label>
-                {{ input_field(id="name", placeholder="Digite o nome do dispositivo") }}
+                {{ input_field(id=form.name.id, name=form.name.name, placeholder="Digite o nome do dispositivo") }}
             </div>
+            {% if form.name.errors %}
+            <ul class="text-red-500 text-xs">
+                {% for error in form.name.errors %}
+                <li>{{ error }}</li>
+                {% endfor %}
+            </ul>
+            {% endif %}
+
             <div class="space-y-2">
                 <label
                     class="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
                     for="type">
-                    Tipo de dispositivo
+                    {{ form.device_type.label }}
                 </label>
-                {{ combobox('type', options=['fan', 'door', 'motion-sensor', 'led', 'rgb']) }}
+                {{ combobox(id=form.device_type.id, name=form.device_type.name, options=form.device_type.choices) }}
             </div>
+
             <div class="space-y-2">
                 <label
-                    class="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
+                    class="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+                    for="name">
                     Pinos
                 </label>
-                <div class="grid grid-cols-3 gap-2">
-                    {{ combobox('pin1', 'Pin 1', options=['1', '2', '3', '4', '5']) }}
-                    {{ combobox('pin2', 'Pin 2', options=['1', '2', '3', '4', '5']) }}
-                    {{ combobox('pin3', 'Pin 3', options=['1', '2', '3', '4', '5']) }}
-                </div>
-                <p class="text-sm text-red-500" id="pin-error" style="display: none;">Os pinos selecionados devem ser
-                    diferentes entre si.</p>
+                {{ pins_selector(pins=pins_list, count=4) }}
             </div>
         </div>
+
         <div class="flex items-center p-6">
-            {{ button(id="add_device", label="Adicionar dispositivo") }}
+            {{ button(id="add_device", label="Adicionar dispositivo", type="submit") }}
         </div>
     </div>
-</main>
-
-<script>
-    document.getElementById('add_device').addEventListener('click', function (event) {
-        const pin1 = document.getElementById('pin1').value;
-        const pin2 = document.getElementById('pin2').value;
-        const pin3 = document.getElementById('pin3').value;
-        const type = document.getElementById('type').value;
-
-        const pinCount = {
-            'fan': 1,
-            'door': 2,
-            'motion-sensor': 1,
-            'led': 1,
-            'rgb': 3
-        };
-
-        const selectedPins = [pin1, pin2, pin3].filter(pin => pin !== '');
-        const uniquePins = new Set(selectedPins);
-
-        if (selectedPins.length !== uniquePins.size) {
-            document.getElementById('pin-error').style.display = 'block';
-            event.preventDefault();
-        } else {
-            document.getElementById('pin-error').style.display = 'none';
-        }
-
-        if (selectedPins.length !== pinCount[type]) {
-            alert(`O tipo de dispositivo ${type} requer ${pinCount[type]} pino(s).`);
-            event.preventDefault();
-        }
-    });
-</script>
+</form>
 {% endblock %}

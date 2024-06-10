@@ -1,0 +1,32 @@
+{% macro pins_selector(pins, count) %}
+<ul class="flex overflow-x-auto space-x-2 p-3 bg-zinc-950 border border-zinc-600 rounded-lg">
+    {% for pin in pins %}
+    <li class="flex flex-row items-center">
+        <input type="checkbox" id="pin-{{ loop.index }}" class="hidden peer" name="pins"
+            value="{{ pin.id }}" {{ 'disabled' if not pin.is_free }}>
+        <label for="pin-{{ loop.index }}"
+            class="w-6 h-6 flex items-center justify-center rounded-full text-zinc-950 peer-disabled:bg-zinc-800 peer-disabled:text-zinc-50 bg-zinc-50 peer-enabled:cursor-pointer peer-checked:bg-green-400 peer-checked:text-zinc-950 peer-enabled:hover:opacity-90">
+            <span class="text-xs">{{ loop.index }}</span>
+        </label>
+    </li>
+    {% endfor %}
+</ul>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const count = {{ count }}
+
+        const checkboxes = document.querySelectorAll('input[type="checkbox"]')
+
+    checkboxes.forEach(function (checkbox) {
+        checkbox.addEventListener('change', function () {
+            const checkboxesSelecionados = document.querySelectorAll('input[type="checkbox"]:checked').length
+            if (checkboxesSelecionados > count) {
+                alert('Você só pode selecionar até ' + count + ' opções.')
+                checkbox.checked = false
+            }
+        })
+    })
+    })
+</script>
+{% endmacro %}
