@@ -33,7 +33,7 @@
             {% endif %}
 
             {{ combobox(id=form.device_type.id, name=form.device_type.name, label=form.device_type.label,
-            options=form.device_type.choices) }}
+            options=form.device_type.choices, selected=device.type.value) }}
 
             <div class="space-y-2">
                 <label
