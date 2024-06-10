@@ -1,16 +1,14 @@
 {% macro combobox(id, name, label, options, selected) %}
 
-{% set initial_label = options[0][1] %}
-{% set initial_value = options[0][0] %}
+{% set ns = namespace(initial_label=options[0][1], initial_value=options[0][0]) %}
 {% for option in options %}
 {% if option[0] == selected %}
-{% set initial_label = option[1] %}
-{% set initial_value = option[0] %}
+{% set ns.initial_label = option[1] %}
+{% set ns.initial_value = option[0] %}
 {% endif %}
 {% endfor %}
 
 <div class="space-y-2">
-
     <label
         class="text-sm font-medium leading-none text-zinc-300 peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
         for="{{ id }}">
@@ -20,8 +18,7 @@
         <button type="button" role="combobox" dir="ltr" data-state="closed"
             class="flex h-10 items-center justify-between rounded-md border border-zinc-600 bg-zinc-950 px-3 py-2 text-sm text-zinc-300 placeholder:text-zinc-500 focus:outline-none focus:ring-2 focus:ring-zinc-500 focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 w-full"
             onclick="toggleCombobox('{{ id }}')">
-
-            <span id="{{ id }}_label" style="pointer-events: none;" class="text-zinc-300">{{ initial_label }}</span>
+            <span id="{{ id }}_label" style="pointer-events: none;" class="text-zinc-300">{{ ns.initial_label }}</span>
             <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
                 stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
                 class="lucide lucide-chevron-down h-4 w-4 text-zinc-50" aria-hidden="true">
@@ -36,7 +33,7 @@
             {% endfor %}
         </ul>
         <!-- Hidden input to store the selected value -->
-        <input type="hidden" id="{{ id }}" name="{{ name }}" value="{{ initial_value }}">
+        <input type="hidden" id="{{ id }}" name="{{ name }}" value="{{ ns.initial_value }}">
     </div>
 </div>
 <script>
