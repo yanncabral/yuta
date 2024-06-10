@@ -18,6 +18,25 @@
                     {{ cell }}
                 </td>
                 {% endfor %}
+
+                <td class="px-6 py-4 whitespace-nowrap text-sm text-zinc-400 flex justify-end gap-2">
+                    <a href="/devices/edit/{{ row[0] }}" class="inline-block text-zinc-400 hover:text-zinc-200">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
+                            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                            class="lucide lucide-pencil">
+                            <path d="M17 3a2.85 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z" />
+                            <path d="m15 5 4 4" />
+                        </svg>
+                    </a>
+                    <a href="/devices/delete/{{ row[0] }}" class="inline-block text-red-600 hover:text-zinc-200">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
+                            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                            class="lucide lucide-x">
+                            <path d="M18 6 6 18" />
+                            <path d="m6 6 12 12" />
+                        </svg>
+                    </a>
+                </td>
             </tr>
             {% endfor %}
         </tbody>
@@ -27,14 +46,17 @@
 <div class="mt-2">
     {# Implementação simplificada de paginação, deve ser ajustada conforme necessidade #}
     <nav class="relative z-0 inline-flex rounded-md shadow-sm -space-x-px" aria-label="Pagination">
-        <a href="#" class="relative inline-flex items-center px-2 py-2 rounded-l-md border border-zinc-800 bg-zinc-950 text-sm font-medium text-zinc-400 hover:bg-zinc-900">
+        <a href="#"
+            class="relative inline-flex items-center px-2 py-2 rounded-l-md border border-zinc-800 bg-zinc-950 text-sm font-medium text-zinc-400 hover:bg-zinc-900">
             Anterior
         </a>
         <!-- Números de página poderiam ser gerados aqui -->
-        <a href="#" class="relative inline-flex items-center px-4 py-2 border border-zinc-800 bg-zinc-950 text-sm font-medium text-zinc-400 hover:bg-zinc-900">
+        <a href="#"
+            class="relative inline-flex items-center px-4 py-2 border border-zinc-800 bg-zinc-950 text-sm font-medium text-zinc-400 hover:bg-zinc-900">
             1
         </a>
-        <a href="#" class="relative inline-flex items-center px-2 py-2 rounded-r-md border border-zinc-800 bg-zinc-950 text-sm font-medium text-zinc-400 hover:bg-zinc-900">
+        <a href="#"
+            class="relative inline-flex items-center px-2 py-2 rounded-r-md border border-zinc-800 bg-zinc-950 text-sm font-medium text-zinc-400 hover:bg-zinc-900">
             Próximo
         </a>
     </nav>
