@@ -3,7 +3,7 @@ from typing import Optional
 from flask import Blueprint, redirect, render_template, request, url_for
 from flask_wtf import FlaskForm
 from pydantic import BaseModel
-from wtforms import SelectField, StringField
+from wtforms import SelectField, SelectMultipleField, StringField
 from wtforms.validators import DataRequired, Length
 
 from app.database import database
@@ -21,7 +21,7 @@ class AddDeviceForm(FlaskForm):
         "Tipo de dispositivo",
         choices=[(device_type.value, DeviceType.label(device_type)) for device_type in DeviceType],
     )
-    pins = SelectField("pins")
+    pins = SelectMultipleField("pins", coerce=int)
 
 
 class Pin(BaseModel):
@@ -30,11 +30,7 @@ class Pin(BaseModel):
     is_free: bool
 
 
-@devices_bp.route("/devices/add", methods=["GET", "POST"])
-def add_device():
-    repository = DevicesRepository(database=database)
-    devices = list(repository.find_by({}))
-
+def _build_pins_list(devices: list[Device]) -> list[Pin]:
     pins_list = []
     for device in devices:
         for pin in device.pins:
@@ -51,12 +47,22 @@ def add_device():
 
     pins_list = sorted(pins_list, key=lambda x: x.id)
 
+    return pins_list
+
+
+@devices_bp.route("/devices/add", methods=["GET", "POST"])
+def add_device():
+    repository = DevicesRepository(database=database)
+    devices = list(repository.find_by({}))
+
+    pins_list = _build_pins_list(devices)
+
     form = AddDeviceForm()
 
     form.pins.choices = [(str(pin.id), str(pin.id)) for pin in pins_list]
 
     if request.method == "POST" and form.validate_on_submit():
-        device = Device(name=form.name.data, type=form.device_type.data, pins=request.form.getlist("pins"))
+        device = Device(name=form.name.data, type=form.device_type.data, pins=form.pins.data)
         repository.save(device)
 
         return redirect(url_for("devices_bp.list_devices"))
@@ -70,10 +76,10 @@ def list_devices():
 
     devices = list(repository.find_by({}))
 
-    def dto(self: Device):
-        return [self.id, self.type.value, self.name, self.pins]
+    def dto(device: Device):
+        return [DeviceType.label(device.type), device.name, ", ".join([str(pin) for pin in device.pins])]
 
     return render_template(
         "devices/list_devices.html",
-        devices_data=[dto(device) for device in devices],
+        devices_data=[[i + 1] + dto(device) for i, device in enumerate(devices)],
     )
