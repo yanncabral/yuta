@@ -1,5 +1,6 @@
 from typing import Optional
 
+from bson import ObjectId
 from flask import Blueprint, redirect, render_template, request, url_for
 from flask_wtf import FlaskForm
 from pydantic import BaseModel
@@ -77,9 +78,32 @@ def list_devices():
     devices = list(repository.find_by({}))
 
     def dto(device: Device):
-        return [DeviceType.label(device.type), device.name, ", ".join([str(pin) for pin in device.pins])]
+        return [device.id, DeviceType.label(device.type), device.name, ", ".join([str(pin) for pin in device.pins])]
+
+    return render_template(
+        "devices/list_devices.html",
+        devices_data=[dto(device) for device in devices],
+    )
+
+
+@devices_bp.route("/devices/edit/<device_id>", methods=["GET", "POST"])
+def edit_device(device_id: str):
+    repository = DevicesRepository(database=database)
+
+    devices = list(repository.find_by({}))
+
+    def dto(device: Device):
+        return [DeviceType.label(device.type), device.name, ", ".join([str(pin) for pin in device.pins]), device.id]
 
     return render_template(
         "devices/list_devices.html",
         devices_data=[[i + 1] + dto(device) for i, device in enumerate(devices)],
     )
+
+
+@devices_bp.route("/devices/delete/<device_id>", methods=["GET", "POST"])
+def delete_device(device_id: str):
+    repository = DevicesRepository(database=database)
+    repository.delete_by_id(ObjectId(device_id))
+
+    return redirect(url_for("devices_bp.list_devices"))
