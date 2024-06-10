@@ -40,7 +40,10 @@
                     for="name">
                     Pinos
                 </label>
-                {{ pins_selector(pins=pins_list, count=4) }}
+                <div id="pins-container">
+                    {{ pins_selector(pins=pins_list) }}
+                </div>
+
                 {% if form.pins.errors %}
                 <ul class="text-red-500 text-xs">
                     {% for error in form.pins.errors %}
@@ -57,29 +60,4 @@
         </div>
     </div>
 </form>
-
-<script>
-    document.addEventListener('DOMContentLoaded', function () {
-        const deviceTypeSelect = document.getElementById('{{ form.device_type.id }}');
-        const checkboxes = document.querySelectorAll('input[type="checkbox"]');
-
-        function updateMaxPins() {
-            const selectedOption = deviceTypeSelect.options[deviceTypeSelect.selectedIndex];
-            const maxPins = parseInt(selectedOption.getAttribute('data-max-pins'), 10);
-
-            checkboxes.forEach(function (checkbox) {
-                checkbox.addEventListener('change', function () {
-                    const selectedCount = document.querySelectorAll('input[type="checkbox"]:checked').length;
-                    if (selectedCount > maxPins) {
-                        alert('Você só pode selecionar até ' + maxPins + ' opções.');
-                        checkbox.checked = false;
-                    }
-                });
-            });
-        }
-
-        deviceTypeSelect.addEventListener('change', updateMaxPins);
-        updateMaxPins(); // Initialize on page load
-    });
-</script>
 {% endblock %}

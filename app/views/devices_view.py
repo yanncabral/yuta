@@ -71,6 +71,13 @@ def add_device():
     form.pins.choices = [(str(pin.id), str(pin.id)) for pin in pins_list]
 
     if request.method == "POST" and form.validate_on_submit():
+        pins_count = DeviceType.pin_count(form.device_type.data)
+        if len(form.pins.data) != pins_count:
+            form.pins.errors.append(
+                f"O dispositivo do tipo {DeviceType.label(form.device_type.data)} requer exatamente {pins_count} pino(s)."
+            )
+            return render_template("devices/add_device.html", form=form, pins_list=pins_list)
+
         device = Device(name=form.name.data, type=form.device_type.data, pins=form.pins.data)
         repository.save(device)
 
