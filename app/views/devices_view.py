@@ -16,13 +16,21 @@ devices_bp = Blueprint("devices_bp", __name__)
 
 class AddDeviceForm(FlaskForm):
     name = StringField(
-        "Nome", validators=[DataRequired(), Length(min=3, max=20, message="Deve ter entre 3 e 20 caracteres")]
+        "Nome",
+        validators=[
+            DataRequired(message="Campo obrigatório"),
+            Length(min=3, max=20, message="Deve ter entre 3 e 20 caracteres"),
+        ],
     )
     device_type = SelectField(
         "Tipo de dispositivo",
         choices=[(device_type.value, DeviceType.label(device_type)) for device_type in DeviceType],
     )
-    pins = SelectMultipleField("pins", coerce=int)
+    pins = SelectMultipleField(
+        "pins",
+        coerce=int,
+        validators=[DataRequired(message="Escolha pelo menos 1 pin")],
+    )
 
 
 class Pin(BaseModel):
@@ -93,11 +101,11 @@ def edit_device(device_id: str):
     devices = list(repository.find_by({}))
 
     def dto(device: Device):
-        return [DeviceType.label(device.type), device.name, ", ".join([str(pin) for pin in device.pins]), device.id]
+        return [device.id, DeviceType.label(device.type), device.name, ", ".join([str(pin) for pin in device.pins])]
 
     return render_template(
         "devices/list_devices.html",
-        devices_data=[[i + 1] + dto(device) for i, device in enumerate(devices)],
+        devices_data=[dto(device) for device in devices],
     )
 
 
