@@ -15,7 +15,7 @@ devices_bp = Blueprint("devices_bp", __name__)
 
 class AddDeviceForm(FlaskForm):
     name = StringField(
-        "Nome", validators=[DataRequired(), Length(min=3, max=20, message="Nome deve ter entre 3 e 20 caracteres")]
+        "Nome", validators=[DataRequired(), Length(min=3, max=20, message="Deve ter entre 3 e 20 caracteres")]
     )
     device_type = SelectField(
         "Tipo de dispositivo",
