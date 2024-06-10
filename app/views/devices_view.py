@@ -35,8 +35,6 @@ def add_device():
     repository = DevicesRepository(database=database)
     devices = list(repository.find_by({}))
 
-    print(devices)
-
     pins_list = []
     for device in devices:
         for pin in device.pins:
