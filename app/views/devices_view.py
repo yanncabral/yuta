@@ -81,14 +81,14 @@ def add_device():
             form.pins.errors.append(
                 f"O dispositivo do tipo {DeviceType.label(form.device_type.data)} requer exatamente {pins_count} pino(s)."
             )
-            return render_template("devices/add_device.html", form=form, pins_list=pins_list)
+            return render_template("devices/add_device_page.html", form=form, pins_list=pins_list)
 
         device = Device(name=form.name.data, type=form.device_type.data, pins=form.pins.data)
         repository.save(device)
 
         return redirect(url_for("devices_bp.list_devices"))
 
-    return render_template("devices/add_device.html", form=form, pins_list=pins_list)
+    return render_template("devices/add_device_page.html", form=form, pins_list=pins_list)
 
 
 @devices_bp.route("/devices/")
@@ -127,7 +127,7 @@ def edit_device(device_id: str):
             form.pins.errors.append(
                 f"O dispositivo do tipo {DeviceType.label(form.device_type.data)} requer exatamente {pins_count} pino(s)."
             )
-            return render_template("devices/edit_device.html", device=device, form=form, pins_list=pins_list)
+            return render_template("devices/edit_device_page.html", device=device, form=form, pins_list=pins_list)
 
         device.name = form.name.data
         device.type = form.device_type.data
@@ -137,7 +137,7 @@ def edit_device(device_id: str):
 
         return redirect(url_for("devices_bp.list_devices"))
 
-    return render_template("devices/edit_device.html", device=device, form=form, pins_list=pins_list)
+    return render_template("devices/edit_device_page.html", device=device, form=form, pins_list=pins_list)
 
 
 @devices_bp.route("/devices/delete/<device_id>", methods=["GET", "POST"])
