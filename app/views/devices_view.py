@@ -13,6 +13,8 @@ from app.repositories.devices_repository import DevicesRepository
 
 devices_bp = Blueprint("devices_bp", __name__)
 
+_number_of_pins = 21
+
 
 class AddDeviceForm(FlaskForm):
     name = StringField(
@@ -48,14 +50,14 @@ def _build_pins_list(devices: list[Device], current_device: Optional[Device] = N
         for pin in device.pins:
             pins_list.append(Pin(id=pin, device_name=device.name if device.name else None, is_free=False))
 
-    all_pins = set(range(1, 11))
+    all_pins = set(range(1, _number_of_pins + 1))
     used_pins = {pin.id for pin in pins_list}
     free_pins = all_pins - used_pins
 
     for pin in free_pins:
         pins_list.append(Pin(id=pin, device_name=None, is_free=True))
 
-    pins_list = pins_list[:10]
+    pins_list = pins_list[:_number_of_pins]
 
     pins_list = sorted(pins_list, key=lambda x: x.id)
 
