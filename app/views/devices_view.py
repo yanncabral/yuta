@@ -13,7 +13,7 @@ from app.repositories.devices_repository import DevicesRepository
 
 devices_bp = Blueprint("devices_bp", __name__)
 
-_number_of_pins = 21
+_number_of_pins = 20
 
 
 class AddDeviceForm(FlaskForm):

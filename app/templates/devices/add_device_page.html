@@ -34,6 +34,9 @@
             {{ combobox(id=form.device_type.id, name=form.device_type.name, label=form.device_type.label,
             options=form.device_type.choices) }}
 
+            {{ combobox(id='pin-type', name='pin-type', label='Tipo de pin',
+            options=[('digital', 'Digital'), ('analogico', 'Analógico')]) }}
+
             <div class="space-y-2">
                 <label
                     class="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
