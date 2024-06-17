@@ -31,11 +31,14 @@
             </ul>
             {% endif %}
 
-            {{ combobox(id=form.device_type.id, name=form.device_type.name, label=form.device_type.label,
+            {{ combobox(
+            id=form.device_type.id,
+            name=form.device_type.name,
+            label=form.device_type.label,
             options=form.device_type.choices) }}
 
-            {{ combobox(id='pin-type', name='pin-type', label='Tipo de pin',
-            options=[('digital', 'Digital'), ('analogico', 'Analógico')]) }}
+            {{ combobox(id=form.pins_type.id, name=form.pins_type.name, label=form.pins_type.label,
+            options=form.pins_type.choices, onchange="togglePinsSelector()") }}
 
             <div class="space-y-2">
                 <label
@@ -43,13 +46,24 @@
                     for="name">
                     Pinos
                 </label>
-                <div id="pins-container">
-                    {{ pins_selector(pins=pins_list) }}
+                <div id="pins-container-add">
+                    {{ pins_selector(pins=digital_pins_list, initial_pins=[], type='digital') }}
+                </div>
+                <div id="analog-pins-container-add" style="display: none;">
+                    {{ pins_selector(pins=analog_pins_list, initial_pins=[], type='analog') }}
                 </div>
 
-                {% if form.pins.errors %}
+                {% if form.digital_pins.errors %}
                 <ul class="text-red-500 text-xs">
-                    {% for error in form.pins.errors %}
+                    {% for error in form.digital_pins.errors %}
+                    <li>{{ error }}</li>
+                    {% endfor %}
+                </ul>
+                {% endif %}
+
+                {% if form.analog_pins.errors %}
+                <ul class="text-red-500 text-xs">
+                    {% for error in form.analog_pins.errors %}
                     <li>{{ error }}</li>
                     {% endfor %}
                 </ul>
@@ -63,4 +77,25 @@
         </div>
     </div>
 </form>
+
+<script>
+    function togglePinsSelector() {
+        const pinsType = document.getElementById('{{ form.pins_type.id }}').value;
+        const digitalPinsContainer = document.getElementById('pins-container-add');
+        const analogPinsContainer = document.getElementById('analog-pins-container-add');
+
+        console.log('pinsType', pinsType);
+
+        if (pinsType === 'digital') {
+            digitalPinsContainer.style.display = 'block';
+            analogPinsContainer.style.display = 'none';
+        } else if (pinsType === 'analog') {
+            digitalPinsContainer.style.display = 'none';
+            analogPinsContainer.style.display = 'block';
+        }
+    }
+
+    window.togglePinsSelector = togglePinsSelector;
+</script>
+
 {% endblock %}

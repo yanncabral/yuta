@@ -8,12 +8,13 @@ from wtforms import SelectField, SelectMultipleField, StringField
 from wtforms.validators import DataRequired, Length
 
 from app.database import database
-from app.models.device import Device, DeviceType
+from app.models.device import Device, DeviceType, PinType
 from app.repositories.devices_repository import DevicesRepository
 
 devices_bp = Blueprint("devices_bp", __name__)
 
-_number_of_pins = 20
+_number_of_digital_pins = 21
+_number_of_analog_pins = 16
 
 
 class AddDeviceForm(FlaskForm):
@@ -28,11 +29,34 @@ class AddDeviceForm(FlaskForm):
         "Tipo de dispositivo",
         choices=[(device_type.value, DeviceType.label(device_type)) for device_type in DeviceType],
     )
-    pins = SelectMultipleField(
-        "pins",
+    digital_pins = SelectMultipleField(
+        "Pinos Digitais",
         coerce=int,
-        validators=[DataRequired(message="Escolha pelo menos 1 pin")],
+        default=[],
     )
+    analog_pins = SelectMultipleField(
+        "Pinos Analógicos",
+        coerce=int,
+        default=[]
+    )
+    pins_type = SelectField(
+        "Tipo de pin",
+        choices=[(pin_type.value, PinType.label(pin_type)) for pin_type in PinType],
+    )
+
+    def validate(self, extra_validators):
+        if not super().validate():
+            return False
+
+        if self.pins_type.data == "digital" and not self.digital_pins.data:
+            self.digital_pins.errors.append("Escolha pelo menos 1 pin digital.")
+            return False
+
+        if self.pins_type.data == "analogico" and not self.analog_pins.data:
+            self.analog_pins.errors.append("Escolha pelo menos 1 pin analógico.")
+            return False
+
+        return True
 
 
 class Pin(BaseModel):
@@ -41,54 +65,97 @@ class Pin(BaseModel):
     is_free: bool
 
 
-def _build_pins_list(devices: list[Device], current_device: Optional[Device] = None) -> list[Pin]:
-    pins_list = []
+def _build_pins_list(devices: list[Device], current_device: Optional[Device] = None) -> (list[Pin], list[Pin]):
+    digital_pins_list = []
+    analog_pins_list = []
+
     for device in devices:
         if current_device and device.id == current_device.id:
             continue
 
-        for pin in device.pins:
-            pins_list.append(Pin(id=pin, device_name=device.name if device.name else None, is_free=False))
+        for pin in device.digital_pins:
+            digital_pins_list.append(Pin(id=pin, device_name=device.name if device.name else None, is_free=False))
 
-    all_pins = set(range(1, _number_of_pins + 1))
-    used_pins = {pin.id for pin in pins_list}
-    free_pins = all_pins - used_pins
+        for pin in device.analogic_pins:
+            analog_pins_list.append(Pin(id=pin, device_name=device.name if device.name else None, is_free=False))
 
-    for pin in free_pins:
-        pins_list.append(Pin(id=pin, device_name=None, is_free=True))
+    all_digital_pins = set(range(1, _number_of_digital_pins + 1))
+    all_analog_pins = set(range(1, _number_of_analog_pins + 1))
 
-    pins_list = pins_list[:_number_of_pins]
+    used_digital_pins = {pin.id for pin in digital_pins_list}
+    used_analog_pins = {pin.id for pin in analog_pins_list}
 
-    pins_list = sorted(pins_list, key=lambda x: x.id)
+    free_digital_pins = all_digital_pins - used_digital_pins
+    free_analog_pins = all_analog_pins - used_analog_pins
 
-    return pins_list
+    for pin in free_digital_pins:
+        digital_pins_list.append(Pin(id=pin, device_name=None, is_free=True))
 
+    for pin in free_analog_pins:
+        analog_pins_list.append(Pin(id=pin, device_name=None, is_free=True))
+
+    digital_pins_list = sorted(digital_pins_list, key=lambda x: x.id)
+    analog_pins_list = sorted(analog_pins_list, key=lambda x: x.id)
+
+    return digital_pins_list, analog_pins_list
 
 @devices_bp.route("/devices/add", methods=["GET", "POST"])
 def add_device():
     repository = DevicesRepository(database=database)
     devices = list(repository.find_by({}))
 
-    pins_list = _build_pins_list(devices)
+    digital_pins_list, analog_pins_list = _build_pins_list(devices)
 
     form = AddDeviceForm()
 
-    form.pins.choices = [(str(pin.id), str(pin.id)) for pin in pins_list]
+    form.digital_pins.choices = [(str(pin.id), str(pin.id)) for pin in digital_pins_list]
+    form.analog_pins.choices = [(str(pin.id), str(pin.id)) for pin in analog_pins_list]
 
     if request.method == "POST" and form.validate_on_submit():
         pins_count = DeviceType.pin_count(form.device_type.data)
-        if len(form.pins.data) != pins_count:
-            form.pins.errors.append(
+        if form.pins_type.data == "digital" and len(form.digital_pins.data) != pins_count:
+            form.digital_pins.errors.append(
                 f"O dispositivo do tipo {DeviceType.label(form.device_type.data)} requer exatamente {pins_count} pino(s)."
             )
-            return render_template("devices/add_device_page.html", form=form, pins_list=pins_list)
 
-        device = Device(name=form.name.data, type=form.device_type.data, pins=form.pins.data)
+            return render_template(
+                "devices/add_device_page.html", 
+                form=form, 
+                pins_type=form.pins_type.data,
+                digital_pins_list=digital_pins_list, 
+                analog_pins_list=analog_pins_list
+            )
+        elif form.pins_type.data == "analogico" and len(form.analog_pins.data) != pins_count:
+            form.analog_pins.errors.append(
+                f"O dispositivo do tipo {DeviceType.label(form.device_type.data)} requer exatamente {pins_count} pino(s)."
+            )
+
+            return render_template(
+                "devices/add_device_page.html", 
+                form=form, 
+                pins_type=form.pins_type.data,
+                digital_pins_list=digital_pins_list, 
+                analog_pins_list=analog_pins_list
+            )
+
+        device = Device(
+            name=form.name.data, 
+            type=form.device_type.data, 
+            digital_pins=form.digital_pins.data if form.pins_type.data == PinType.digital else [],
+            analogic_pins=form.analog_pins.data if form.pins_type.data == PinType.analog else [],
+            pins_type=form.pins_type.data
+        )
+
         repository.save(device)
 
         return redirect(url_for("devices_bp.list_devices"))
 
-    return render_template("devices/add_device_page.html", form=form, pins_list=pins_list)
+    return render_template(
+        "devices/add_device_page.html", 
+        form=form, 
+        digital_pins_list=digital_pins_list, 
+        analog_pins_list=analog_pins_list
+    )
 
 
 @devices_bp.route("/devices/")
@@ -98,7 +165,14 @@ def list_devices():
     devices = list(repository.find_by({}))
 
     def dto(device: Device):
-        return [device.id, DeviceType.label(device.type), device.name, ", ".join([str(pin) for pin in device.pins])]
+        pins = device.digital_pins if device.pins_type == PinType.digital else device.analogic_pins
+        return [
+            device.id, 
+            DeviceType.label(device.type), 
+            device.name, 
+            ", ".join([str(pin) for pin in pins]),
+            PinType.label(device.pins_type)
+        ]
 
     return render_template(
         "devices/list_devices_page.html",
@@ -115,29 +189,56 @@ def edit_device(device_id: str):
         return redirect(url_for("devices_bp.list_devices"))
 
     devices = list(repository.find_by({}))
-    pins_list = _build_pins_list(devices, device)
+    digital_pins_list, analog_pins_list = _build_pins_list(devices, device)
 
     form = AddDeviceForm()
 
-    form.pins.choices = [(str(pin.id), str(pin.id)) for pin in pins_list]
+    form.digital_pins.choices = [(str(pin.id), str(pin.id)) for pin in digital_pins_list]
+    form.analog_pins.choices = [(str(pin.id), str(pin.id)) for pin in analog_pins_list]
 
     if request.method == "POST" and form.validate_on_submit():
         pins_count = DeviceType.pin_count(form.device_type.data)
-        if len(form.pins.data) != pins_count:
-            form.pins.errors.append(
+        if form.pins_type.data == "digital" and len(form.digital_pins.data) != pins_count:
+            form.digital_pins.errors.append(
                 f"O dispositivo do tipo {DeviceType.label(form.device_type.data)} requer exatamente {pins_count} pino(s)."
             )
-            return render_template("devices/edit_device_page.html", device=device, form=form, pins_list=pins_list)
+            return render_template(
+                "devices/edit_device_page.html", 
+                device=device, 
+                form=form, 
+                digital_pins_list=digital_pins_list, 
+                analog_pins_list=analog_pins_list
+            )
+        
+        elif form.pins_type.data == "analogico" and len(form.analog_pins.data) != pins_count:
+            form.analog_pins.errors.append(
+                f"O dispositivo do tipo {DeviceType.label(form.device_type.data)} requer exatamente {pins_count} pino(s)."
+            )
+            return render_template(
+                "devices/edit_device_page.html", 
+                device=device, 
+                form=form, 
+                digital_pins_list=digital_pins_list, 
+                analog_pins_list=analog_pins_list
+            )
 
         device.name = form.name.data
         device.type = form.device_type.data
-        device.pins = form.pins.data
+        device.digital_pins = form.digital_pins.data if form.pins_type.data == PinType.digital else []
+        device.analogic_pins = form.analog_pins.data if form.pins_type.data == PinType.analog else []
+        device.pins_type = form.pins_type.data
 
         repository.save(device)
 
         return redirect(url_for("devices_bp.list_devices"))
 
-    return render_template("devices/edit_device_page.html", device=device, form=form, pins_list=pins_list)
+    return render_template(
+        "devices/edit_device_page.html", 
+        device=device, 
+        form=form, 
+        digital_pins_list=digital_pins_list, 
+        analog_pins_list=analog_pins_list
+    )
 
 
 @devices_bp.route("/devices/delete/<device_id>", methods=["GET", "POST"])

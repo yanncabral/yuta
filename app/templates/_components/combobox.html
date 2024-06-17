@@ -1,4 +1,4 @@
-{% macro combobox(id, name, label, options, selected) %}
+{% macro combobox(id, name, label, options, selected, onchange) %}
 
 {% set ns = namespace(initial_label=options[0][1], initial_value=options[0][0]) %}
 {% for option in options %}
@@ -41,6 +41,8 @@
         const combobox = document.getElementById(id + '_options')
         const state = combobox.style.display
         combobox.style.display = state === 'block' ? 'none' : 'block'
+
+        window.togglePinsSelector();
     }
 
     function selectOption(id, value, label) {
