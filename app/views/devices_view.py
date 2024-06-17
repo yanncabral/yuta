@@ -101,7 +101,7 @@ def list_devices():
         return [device.id, DeviceType.label(device.type), device.name, ", ".join([str(pin) for pin in device.pins])]
 
     return render_template(
-        "devices/list_devices.html",
+        "devices/list_devices_page.html",
         devices_data=[dto(device) for device in devices],
     )
 

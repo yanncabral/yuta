@@ -1,19 +1,17 @@
-from openai import OpenAI
+import openai
 from werkzeug.datastructures import FileStorage
 import tempfile
 
-client = OpenAI()
-
 def transcript_audio(audio_file: FileStorage) -> str:
-    with tempfile.NamedTemporaryFile(suffix=".mp3", delete=False) as temp_audio:
+    with tempfile.NamedTemporaryFile(suffix=".wav", delete=False) as temp_audio:
         audio_file.save(temp_audio)
         temp_audio_path = temp_audio.name
 
-    with open(temp_audio_path, 'rb') as audio:
-        transcription = client.audio.transcriptions.create(
-            model="whisper-1",
-            file=audio,
-            language="pt"
-        )
+    print(temp_audio_path)
 
-    return transcription.text
+    with open(temp_audio_path, 'rb') as audio:
+        try:
+            resposta = openai.Audio.transcribe("whisper-1", audio, language="pt")
+            return resposta['text']
+        except Exception as ex:
+            return f"Erro ao transcrever áudio: {ex}"
