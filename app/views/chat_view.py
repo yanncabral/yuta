@@ -23,8 +23,5 @@ def upload_audio():
 
     print('transcrição:', transcription)
 
-    # Aqui você pode salvar o arquivo ou processá-lo conforme necessário
-    # Exemplo: audio_file.save("/caminho/para/salvar/" + audio_file.filename)
-
     return jsonify({"transcription": transcription}), 200
 
