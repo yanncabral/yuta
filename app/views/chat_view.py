@@ -23,6 +23,7 @@ def upload_audio():
 
 
     print('transcrição:', transcription)
+    print('command:', command)
     exec(command)
 
     return jsonify({"transcription": transcription}), 200

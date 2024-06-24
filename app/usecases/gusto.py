@@ -3,7 +3,6 @@ from pymongo import MongoClient
 import serial
 import pyttsx3
 from datetime import datetime, timedelta
-from app.config import DATABASE_NAME, DATABASE_URL
 from app.database import database
 from time import sleep
 
@@ -38,7 +37,10 @@ def acao_rgb(nome_dispositivo,acao,cores=None):
 def acao_led(nome_dispositivo,acao):
     dispositivo = dispositivos_collection.find_one({'name': nome_dispositivo, 'type': 'led'})
     pinos = list(dispositivo['digital_pins'])
-
+    if acao.upper() == "LIGAR":
+        acao = "ACENDER"
+    comando = "CONFIG LED " + str(pinos[0]) + "\n"
+    meu_serial.write(comando.encode("UTF-8"))
     comando = str(acao).upper() + " LED " + str(pinos[0]) + "\n"
     print(comando)
     meu_serial.write(comando.encode("UTF-8"))
