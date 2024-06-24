@@ -18,6 +18,9 @@ flask-openapi3 = "^3.1.1"
 flask-wtf = "^1.2.1"
 openai = "0.28.1"
 
+pyttsx3 = "^2.90"
+serial = "^0.0.97"
+pyserial = "^3.5"
 [tool.poetry.group.dev.dependencies]
 black = "^24.4.2"
 ruff = "^0.4.7"
