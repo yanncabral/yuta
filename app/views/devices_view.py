@@ -34,11 +34,7 @@ class AddDeviceForm(FlaskForm):
         coerce=int,
         default=[],
     )
-    analog_pins = SelectMultipleField(
-        "Pinos Analógicos",
-        coerce=int,
-        default=[]
-    )
+    analog_pins = SelectMultipleField("Pinos Analógicos", coerce=int, default=[])
     pins_type = SelectField(
         "Tipo de pin",
         choices=[(pin_type.value, PinType.label(pin_type)) for pin_type in PinType],
@@ -99,6 +95,7 @@ def _build_pins_list(devices: list[Device], current_device: Optional[Device] = N
 
     return digital_pins_list, analog_pins_list
 
+
 @devices_bp.route("/devices/add", methods=["GET", "POST"])
 def add_device():
     repository = DevicesRepository(database=database)
@@ -119,11 +116,11 @@ def add_device():
             )
 
             return render_template(
-                "devices/add_device_page.html", 
-                form=form, 
+                "devices/add_device_page.html",
+                form=form,
                 pins_type=form.pins_type.data,
-                digital_pins_list=digital_pins_list, 
-                analog_pins_list=analog_pins_list
+                digital_pins_list=digital_pins_list,
+                analog_pins_list=analog_pins_list,
             )
         elif form.pins_type.data == "analogico" and len(form.analog_pins.data) != pins_count:
             form.analog_pins.errors.append(
@@ -131,19 +128,19 @@ def add_device():
             )
 
             return render_template(
-                "devices/add_device_page.html", 
-                form=form, 
+                "devices/add_device_page.html",
+                form=form,
                 pins_type=form.pins_type.data,
-                digital_pins_list=digital_pins_list, 
-                analog_pins_list=analog_pins_list
+                digital_pins_list=digital_pins_list,
+                analog_pins_list=analog_pins_list,
             )
 
         device = Device(
-            name=form.name.data, 
-            type=form.device_type.data, 
+            name=form.name.data,
+            type=form.device_type.data,
             digital_pins=form.digital_pins.data if form.pins_type.data == PinType.digital else [],
             analogic_pins=form.analog_pins.data if form.pins_type.data == PinType.analog else [],
-            pins_type=form.pins_type.data
+            pins_type=form.pins_type.data,
         )
 
         repository.save(device)
@@ -151,10 +148,10 @@ def add_device():
         return redirect(url_for("devices_bp.list_devices"))
 
     return render_template(
-        "devices/add_device_page.html", 
-        form=form, 
-        digital_pins_list=digital_pins_list, 
-        analog_pins_list=analog_pins_list
+        "devices/add_device_page.html",
+        form=form,
+        digital_pins_list=digital_pins_list,
+        analog_pins_list=analog_pins_list,
     )
 
 
@@ -167,11 +164,11 @@ def list_devices():
     def dto(device: Device):
         pins = device.digital_pins if device.pins_type == PinType.digital else device.analogic_pins
         return [
-            device.id, 
-            DeviceType.label(device.type), 
-            device.name, 
+            device.id,
+            DeviceType.label(device.type),
+            device.name,
             ", ".join([str(pin) for pin in pins]),
-            PinType.label(device.pins_type)
+            PinType.label(device.pins_type),
         ]
 
     return render_template(
@@ -203,23 +200,23 @@ def edit_device(device_id: str):
                 f"O dispositivo do tipo {DeviceType.label(form.device_type.data)} requer exatamente {pins_count} pino(s)."
             )
             return render_template(
-                "devices/edit_device_page.html", 
-                device=device, 
-                form=form, 
-                digital_pins_list=digital_pins_list, 
-                analog_pins_list=analog_pins_list
+                "devices/edit_device_page.html",
+                device=device,
+                form=form,
+                digital_pins_list=digital_pins_list,
+                analog_pins_list=analog_pins_list,
             )
-        
+
         elif form.pins_type.data == "analogico" and len(form.analog_pins.data) != pins_count:
             form.analog_pins.errors.append(
                 f"O dispositivo do tipo {DeviceType.label(form.device_type.data)} requer exatamente {pins_count} pino(s)."
             )
             return render_template(
-                "devices/edit_device_page.html", 
-                device=device, 
-                form=form, 
-                digital_pins_list=digital_pins_list, 
-                analog_pins_list=analog_pins_list
+                "devices/edit_device_page.html",
+                device=device,
+                form=form,
+                digital_pins_list=digital_pins_list,
+                analog_pins_list=analog_pins_list,
             )
 
         device.name = form.name.data
@@ -233,11 +230,11 @@ def edit_device(device_id: str):
         return redirect(url_for("devices_bp.list_devices"))
 
     return render_template(
-        "devices/edit_device_page.html", 
-        device=device, 
-        form=form, 
-        digital_pins_list=digital_pins_list, 
-        analog_pins_list=analog_pins_list
+        "devices/edit_device_page.html",
+        device=device,
+        form=form,
+        digital_pins_list=digital_pins_list,
+        analog_pins_list=analog_pins_list,
     )
 
 

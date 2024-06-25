@@ -1,77 +1,18 @@
 {% extends "base.html" %}
+{% from "chat/chat_header.html" import chat_header %}
+{% from "chat/chat_messages.html" import chat_messages %}
+{% from "chat/chat_bottombar.html" import chat_bottombar %}
 
 {% block content %}
 <main class="flex-1 p-4 md:p-6 max-w-4xl">
     <div class="bg-zinc-950 text-zinc-50 shadow-sm w-full mx-auto">
-        <div class="flex flex-col space-y-1.5 p-6">
-            <h3 class="text-2xl font-bold tracking-tight">
-                {% block title %}
-                Chat
-                {% endblock %}
-            </h3>
-            <p class="text-md text-zinc-400">Pressione e segure o botão de microfone para gravar seu áudio.</p>
-        </div>
-        <div class="p-6 space-y-4 border-t border-zinc-800">
-            <div class="flex justify-center">
-                <button id="recordButton"
-                    class="bg-zinc-50 hover:bg-zinc-200 text-white font-bold py-2 px-4 rounded-full">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
-                        stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
-                        class="lucide lucide-mic text-zinc-900">
-                        <path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3Z" />
-                        <path d="M19 10v2a7 7 0 0 1-14 0v-2" />
-                        <line x1="12" x2="12" y1="19" y2="22" />
-                    </svg>
-                </button>
-            </div>
+        <div class="space-y-4 border-zinc-800">
+            {{ chat_header() }}
+            {{ chat_messages(messages) }}
+            {{ chat_bottombar() }}
         </div>
     </div>
 </main>
 
-<script>
-    let mediaRecorder;
-    let audioChunks = [];
 
-    document.getElementById('recordButton').addEventListener('mousedown', startRecording);
-    document.getElementById('recordButton').addEventListener('mouseup', stopRecording);
-
-    function startRecording() {
-        navigator.mediaDevices.getUserMedia({ audio: true })
-            .then(stream => {
-                mediaRecorder = new MediaRecorder(stream);
-                mediaRecorder.start();
-
-                mediaRecorder.addEventListener('dataavailable', event => {
-                    audioChunks.push(event.data);
-                });
-
-                mediaRecorder.addEventListener('stop', () => {
-                    const audioBlob = new Blob(audioChunks, { type: 'audio/wav' });
-                    audioChunks = [];
-                    sendAudio(audioBlob);
-                });
-            });
-    }
-
-    function stopRecording() {
-        mediaRecorder.stop();
-    }
-
-    function sendAudio(audioBlob) {
-        const formData = new FormData();
-        formData.append('audio', audioBlob);
-
-        fetch('/chat/upload_audio', {
-            method: 'POST',
-            body: formData
-        })
-            .then(response => response.json())
-            .then(data => {
-                console.log('Success:', data);
-            })
-            .catch((error) => {
-                console.error('Error:', error);
-            })
-    }
-</script>
 {% endblock %}

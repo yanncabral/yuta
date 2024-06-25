@@ -1,0 +1,21 @@
+{% from "chat/chat_avatar.html" import chat_avatar %}
+
+{% macro chat_header() %}
+<div class="w-full h-20 flex flex-row p-4 justify-between items-center border-b border-zinc-800">
+    <div class="flex items-center gap-2">
+        {{ chat_avatar(is_bot=true) }}
+        <div class="flex flex-col">
+            <span class=></span>
+            <span class="font-medium">Assistente (Bot)</span>
+            <span class="text-xs">Online</span>
+        </div>
+    </div>
+
+    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+        stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-info text-zinc-400">
+        <circle cx="12" cy="12" r="10" />
+        <path d="M12 16v-4" />
+        <path d="M12 8h.01" />
+    </svg>
+</div>
+{% endmacro %}

@@ -1,5 +1,5 @@
 from enum import Enum
-from typing import List, Literal, Optional
+from typing import List, Optional
 
 from pydantic import BaseModel
 from pydantic_mongo import PydanticObjectId
@@ -35,7 +35,8 @@ class DeviceType(str, Enum):
         }
 
         return name_mapping[device_type]
-    
+
+
 class PinType(str, Enum):
     digital = "digital"
     analog = "analog"
