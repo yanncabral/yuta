@@ -146,7 +146,7 @@ def add_device():
             pins_type=form.pins_type.data,
             schedule_start=form.schedule_start.data,
             schedule_end=form.schedule_end.data,
-            has_schedule=DeviceType.has_schedule(form.device_type.data),
+            has_schedule=DeviceType.has_schedule(form.device_type.data) and form.schedule_start.data and form.schedule_end.data,
         )
 
         repository.save(device)
