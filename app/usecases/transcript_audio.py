@@ -1,6 +1,7 @@
 import os
 import subprocess
 import tempfile
+from typing import Optional
 
 import openai
 from werkzeug.datastructures import FileStorage
@@ -27,7 +28,7 @@ def convert_to_wav(audio_file: FileStorage) -> str:
     return temp_wav_path
 
 
-def build_command_by_transcription(transcription):
+def build_command_by_text(transcription) -> tuple[str, Optional[str]]:
     contexto = """
     Você é um assistente especializado em transformar solicitações de usuários em código Python. Sua tarefa é pegar a solicitação do usuário e retornar apenas o código Python correspondente, sempre delimitando o código com '$' no início e no fim. O código deve ser claro e funcional, pronto para ser executado.
     Exemplo:
@@ -47,15 +48,24 @@ def build_command_by_transcription(transcription):
     for device in devices:
         contexto += "\nnome: %s, tipo: %s" % (device.name, device.type)
 
-    contexto2 = """
+    contexto += """
         Sempre use alguma das seguintes funções (de acordo com o tipo do dispositivo):
             def acao_rgb(nome_dispositivo,acao,cores) [cores em uma lista no rgb, exemplo: [0,255,127], se nao informado pelo usuário, passe None]
             def acao_led(nome_dispositivo,acao)
             def acao_ventilador(nome_dispositivo,acao,velocidade) [velocidade um inteiro entre 1 e 3, se nao informado pelo usuário, passe None]
             def acao_porta(nome_dispositivo,acao)
+
+        Além disso, retorne uma mensagem que possa ser usada como mensagem para o usuário, caso não tenha entendido o comando, ou tenha executado com sucesso, sem aspas e separado por ### entre o comando e a mensagem. Por exemplo:
+
+        entrada do usuário: "Ligue o ventilador do meu quarto"
+        resposta: "Entendi, ligando o ventilador do quarto. ### acao_ventilador('ventilador do quarto', 'LIGAR', 2)"
+
+        Caso não seja um comando, apenas responda a pergunta, passando o comando como uma string vazia. Por exemplo:
+
+        entrada do usuário: "quais dispositivos existem cadastrados?"
+        resposta: "Dispositivos cadastrados: ventilador do quarto, porta do meu quarto. ###"
         """
 
-    contexto += contexto2
     try:
         resposta = openai.ChatCompletion.create(
             model="gpt-4",
@@ -69,9 +79,12 @@ def build_command_by_transcription(transcription):
             temperature=0.8,
         )
 
-        message: str = resposta.choices[0].message["content"]
-        message = message.replace("$", "").strip()
-        return message
+        response: str = resposta.choices[0].message["content"]
+        response = response.replace("$", "").strip()
+        response = response.split("###")
+        command = response[0].strip()
+        message = response[1].strip() if len(response) > 1 else None
+        return command, message
     except Exception as e:
         return f"Erro ao gerar resposta: {e}"
 
@@ -81,5 +94,5 @@ def transcript_audio(audio_file: FileStorage) -> (str, str):
 
     with open(temp_audio_path, "rb") as audio:
         transcription = openai.Audio.transcribe("whisper-1", audio, language="pt")["text"]
-        command = build_command_by_transcription(transcription)
+        command, _ = build_command_by_text(transcription)
         return command, transcription
