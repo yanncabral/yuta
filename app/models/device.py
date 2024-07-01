@@ -11,6 +11,7 @@ class DeviceType(str, Enum):
     motion_sensor = "motion-sensor"
     led = "led"
     rgb = "rgb"
+    buzzer = "buzzer"
 
     @staticmethod
     def pin_count(device_type: "DeviceType") -> int:
@@ -20,6 +21,7 @@ class DeviceType(str, Enum):
             DeviceType.motion_sensor: 1,
             DeviceType.led: 1,
             DeviceType.rgb: 3,
+            DeviceType.buzzer: 1,
         }
 
         return pin_mapping[device_type]
@@ -32,6 +34,7 @@ class DeviceType(str, Enum):
             DeviceType.motion_sensor: "Sensor de movimento",
             DeviceType.led: "LED",
             DeviceType.rgb: "LED RGB",
+            DeviceType.buzzer: "Campainha",
         }
 
         return name_mapping[device_type]
