@@ -1,0 +1,31 @@
+{% from "chat/chat_record_audio_button.html" import chat_record_audio_button %}
+
+{% macro chat_bottombar() %}
+<div class="flex items-center p-4 bg-zinc-950 text-zinc-50 border-t border-zinc-800">
+    <input id="messageInput" type="text" placeholder="digite seu comando..."
+        class="flex-1 p-2 text-sm bg-zinc-900 text-zinc-50 border border-zinc-800 rounded-md focus:outline-none focus:ring-2 focus:ring-zinc-600"
+        onkeydown="if(event.keyCode === 13) sendMessage()">
+    {{ chat_record_audio_button() }}
+</div>
+
+<script>
+    function sendMessage() {
+        const message = document.getElementById('messageInput').value;
+        fetch('/chat/send_message', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ message: message }),
+        })
+            .then(response => response.json())
+            .then(data => {
+                console.log('Success:', data);
+                window.location.reload();
+            })
+            .catch((error) => {
+                console.error('Error:', error);
+            });
+    }
+</script>
+{% endmacro %}

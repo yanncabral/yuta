@@ -1,8 +1,8 @@
 from flask import Flask
 
 from app.controllers.devices_controller import devices_controller
-from app.views.devices_view import devices_bp
 from app.views.chat_view import chat_bp
+from app.views.devices_view import devices_bp
 
 
 def register_endpoints(app: Flask):
