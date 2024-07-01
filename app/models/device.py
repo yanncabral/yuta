@@ -41,6 +41,10 @@ class DeviceType(str, Enum):
         }
 
         return name_mapping[device_type]
+    
+    @staticmethod
+    def has_schedule(device_type: "DeviceType") -> bool:
+        return device_type in [DeviceType.motion_sensor, DeviceType.light_sensor]
 
 
 class PinType(str, Enum):
@@ -64,3 +68,6 @@ class Device(BaseModel):
     digital_pins: List[int]
     analogic_pins: List[int]
     pins_type: PinType
+    schedule_start: Optional[int] = None
+    schedule_end: Optional[int] = None
+    has_schedule: bool = False

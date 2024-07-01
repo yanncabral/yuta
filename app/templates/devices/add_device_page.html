@@ -3,6 +3,7 @@
 {% from "_components/combobox.html" import combobox %}
 {% from "_components/button.html" import button %}
 {% from "_components/pins_selector.html" import pins_selector %}
+{% from "_components/schedule_selector.html" import schedule_selector %}
 
 {% block content %}
 <form class="flex-1 p-4 md:p-6 max-w-4xl" method="post">
@@ -36,6 +37,18 @@
             name=form.device_type.name,
             label=form.device_type.label,
             options=form.device_type.choices) }}
+
+            <div id="schedule-selector-container" style="display: none;">
+                {{ schedule_selector(
+                schedule_start_id=form.schedule_start.id,
+                schedule_end_id=form.schedule_end.id,
+                schedule_start_label=form.schedule_start.label,
+                schedule_end_label=form.schedule_end.label,
+                schedule_start_name=form.schedule_start.name,
+                schedule_end_name=form.schedule_end.name,
+                )
+                }}
+            </div>
 
             {{ combobox(id=form.pins_type.id, name=form.pins_type.name, label=form.pins_type.label,
             options=form.pins_type.choices, onchange="togglePinsSelector()") }}
@@ -80,11 +93,17 @@
 
 <script>
     function togglePinsSelector() {
+        const deviceType = document.getElementById('{{ form.device_type.id }}').value;
+        const scheduleSelectorContainer = document.getElementById('schedule-selector-container');
         const pinsType = document.getElementById('{{ form.pins_type.id }}').value;
         const digitalPinsContainer = document.getElementById('pins-container-add');
         const analogPinsContainer = document.getElementById('analog-pins-container-add');
 
-        console.log('pinsType', pinsType);
+        if (deviceType === 'motion-sensor' || deviceType === 'sensor_luz') {
+            scheduleSelectorContainer.style.display = 'block';
+        } else {
+            scheduleSelectorContainer.style.display = 'none';
+        }
 
         if (pinsType === 'digital') {
             digitalPinsContainer.style.display = 'block';
@@ -93,6 +112,8 @@
             digitalPinsContainer.style.display = 'none';
             analogPinsContainer.style.display = 'block';
         }
+
+
     }
 
     window.togglePinsSelector = togglePinsSelector;

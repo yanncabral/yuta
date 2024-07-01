@@ -4,8 +4,8 @@ from bson import ObjectId
 from flask import Blueprint, redirect, render_template, request, url_for
 from flask_wtf import FlaskForm
 from pydantic import BaseModel
-from wtforms import SelectField, SelectMultipleField, StringField
-from wtforms.validators import DataRequired, Length
+from wtforms import SelectField, SelectMultipleField, StringField, IntegerField
+from wtforms.validators import DataRequired, Length, optional
 
 from app.database import database
 from app.models.device import Device, DeviceType, PinType
@@ -39,11 +39,10 @@ class AddDeviceForm(FlaskForm):
         "Tipo de pin",
         choices=[(pin_type.value, PinType.label(pin_type)) for pin_type in PinType],
     )
+    schedule_start = IntegerField("Horário de início", validators=[optional()])
+    schedule_end = IntegerField("Horário de fim", validators=[optional()])
 
     def validate(self, extra_validators):
-        if not super().validate():
-            return False
-
         if self.pins_type.data == "digital" and not self.digital_pins.data:
             self.digital_pins.errors.append("Escolha pelo menos 1 pin digital.")
             return False
@@ -52,6 +51,10 @@ class AddDeviceForm(FlaskForm):
             self.analog_pins.errors.append("Escolha pelo menos 1 pin analógico.")
             return False
 
+        if not super().validate():
+            print("erro de validação")
+            return False
+        
         return True
 
 
@@ -141,6 +144,9 @@ def add_device():
             digital_pins=form.digital_pins.data if form.pins_type.data == PinType.digital else [],
             analogic_pins=form.analog_pins.data if form.pins_type.data == PinType.analog else [],
             pins_type=form.pins_type.data,
+            schedule_start=form.schedule_start.data,
+            schedule_end=form.schedule_end.data,
+            has_schedule=DeviceType.has_schedule(form.device_type.data),
         )
 
         repository.save(device)
@@ -224,6 +230,9 @@ def edit_device(device_id: str):
         device.digital_pins = form.digital_pins.data if form.pins_type.data == PinType.digital else []
         device.analogic_pins = form.analog_pins.data if form.pins_type.data == PinType.analog else []
         device.pins_type = form.pins_type.data
+        device.schedule_start = form.schedule_start.data
+        device.schedule_end = form.schedule_end.data
+        device.has_schedule = DeviceType.has_schedule(form.device_type.data)
 
         repository.save(device)
 
